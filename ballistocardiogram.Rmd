@@ -1,0 +1,108 @@
+---
+title: "Ballistocardiogram"
+author: "Max Czapanskiy"
+date: "7/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(lubridate)
+library(patchwork)
+library(plotly)
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE)
+source("read_nc.R")
+theme_set(theme_minimal() +
+            theme(axis.title.x = element_blank()))
+```
+
+```{r load, include=FALSE, cache=TRUE}
+bw180905_53 <- read_nc("bw180905-53_prh10_ballisto.nc")
+```
+
+## Blue Whale Cardiac Physiology
+
+The dive response experienced by whales and other diving air-breathers includes a reduced heart rate (bradycardia) while submerged and elevated heart rates (tachycardia) at the surface between dives. Allometric scaling predicts a resting heart rate of 15 bpm for an average-sized blue whale; observed diving and surface heart rates at rest are roughly 8 bpm and 25 bpm, respectively. The total duration of a single heart beat is 1.8 s. See Goldbogen et al. (2019).
+
+Goldbogen, Jeremy A., D. E. Cade, J. Calambokidis, M. F. Czapanskiy, J. Fahlbusch, A. S. Friedlaender, W. T. Gough, et al. “Extreme Bradycardia and Tachycardia in the World’s Largest Animal.” *Proceedings of the National Academy of Sciences* 116, no. 50 (December 10, 2019): 25329–32. https://doi.org/10.1073/pnas.1914273116.
+
+<img src="goldbogen_et_al_2019_fig1e.png" width="450" />
+
+Figure 1e from Goldbogen et al. (2019)
+
+## Ballistocardiogram
+
+There are multiple methods for detecting heart beats. Marine mammal cardiac function has been studied with electrocardiograms and phonocardiograms, which use electric potential and sound, respectively. A ballistocardiogram (BCG) detects the ballistic forces associated with the pulses of blood powered by heart beats. As the heart pumps blood into the aorta, the body mass recoils slightly towards the head. Accelerometers installed in mattresses, for example, allow doctors to detect heart beat abnormalities during sleep (Sadek, Biswas, and Abdulrazak 2019). We recently discovered that accelerometers in a tag can, under the right conditions, measure diving bradycardia.
+
+Deployment bw180905-53 slipped behind the left pectoral flipper, where it stayed overnight. In this position, heart beats are visible in the jerk signal.
+
+<img src="_bw180905-53Quicklook.jpg" width="650" />
+
+```{r heartbeats}
+dive <- bw180905_53 %>% 
+  filter(dt >= "2018-09-06 01:38", 
+         dt <= "2018-09-06 01:48")
+zoom_start <- ymd_hms("2018-09-06 01:40:25", tz = attr(bw180905_53, "tz"))
+zoom_end <- ymd_hms("2018-09-06 01:41:00", tz = attr(bw180905_53, "tz"))
+zoom <- dive %>% 
+  filter(dt >= zoom_start, 
+         dt <= zoom_end)
+jerk_peaks <- pracma::findpeaks(zoom$jerk, minpeakheight = 0.07)
+beats <- slice(zoom, jerk_peaks[,2])
+inter_labels <- tibble(
+  dt = beats$dt[1:2] + (beats$dt[2:3] - beats$dt[1:2]) / 2,
+  jerk = beats$jerk[1:2] + (beats$jerk[2:3] - beats$jerk[1:2]) / 2 - 0.01,
+  bpm = 60 / as.numeric(beats$dt[2:3] - beats$dt[1:2], unit = "secs"),
+  label = sprintf("%.1f bpm", bpm)
+)
+depth_p <- ggplot(dive, aes(dt, p)) +
+  geom_line(size = 0.2, color = "dark blue") +
+  annotate('rect', 
+           xmin = zoom_start, xmax = zoom_end,
+           ymin = 17, ymax = 13,
+           fill = "dark blue", alpha = 0.25) +
+  scale_x_datetime(date_labels = "%H:%M") +
+  scale_y_reverse("Depth (m)")
+jerk_p <- ggplot(dive, aes(dt, jerk)) +
+  geom_line(size = 0.2, color = "magenta") +
+  annotate('rect', 
+           xmin = zoom_start, xmax = zoom_end,
+           ymin = -0.05, ymax = 0.1,
+           fill = "magenta", alpha = 0.25) +
+  scale_x_datetime(date_labels = "%H:%M") +
+  labs(y = "Jerk (m/s^3)")
+beats_p <- ggplot(zoom, aes(dt, jerk)) +
+  geom_line(size = 0.2, color = "magenta") +
+  geom_line(data = beats, color = "grey70") +
+  geom_point(data = beats, shape = 21, color = "black", fill = "magenta") +
+  geom_text(aes(label = label), inter_labels) +
+  annotate('segment', 
+           x = beats$dt - 1.4, xend = beats$dt + 0.4, 
+           y = 0.03, yend = 0.03) +
+  annotate('text', 
+           x = beats$dt[1] - 1.6, y = 0.03, 
+           label = "1.8 s", hjust = 1) +
+  scale_x_datetime(date_labels = "%H:%M:%S") +
+  labs(y = "Jerk (m/s^3)")
+depth_p / jerk_p / beats_p
+```
+
+```{r interactive}
+p_depth <- (ggplot(bw180905_53, aes(dt, p)) +
+              geom_line(size = 0.2, color = "dark blue") +
+              scale_y_reverse("Depth (m)") +
+              theme_classic()) %>% 
+  ggplotly(dynamicTicks = TRUE)
+p_jerk <- (ggplot(bw180905_53, aes(dt, jerk)) +
+             geom_line(size = 0.2, color = "magenta") +
+             labs(y = "Jerk (m/s^3)") +
+             theme_classic()) %>% 
+  ggplotly(dynamicTicks = TRUE)
+
+subplot(p_depth, p_jerk,
+        nrows = 2, 
+        shareX = TRUE, 
+        titleX = FALSE,
+        titleY = TRUE)
+```
+
