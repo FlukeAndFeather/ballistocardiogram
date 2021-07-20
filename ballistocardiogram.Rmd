@@ -1,8 +1,11 @@
 ---
-title: "Ballistocardiogram"
+title: "Tag-derived Ballistocardiograms"
 author: "Max Czapanskiy"
-date: "7/19/2021"
-output: html_document
+date: "7/21/2021"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
 ---
 
 ```{r setup, include=FALSE}
@@ -20,25 +23,35 @@ theme_set(theme_minimal() +
 bw180905_53 <- read_nc("bw180905-53_prh10_ballisto.nc")
 ```
 
-## Blue Whale Cardiac Physiology
+## Diving Cardiovascular Physiology
 
-The dive response experienced by whales and other diving air-breathers includes a reduced heart rate (bradycardia) while submerged and elevated heart rates (tachycardia) at the surface between dives. Allometric scaling predicts a resting heart rate of 15 bpm for an average-sized blue whale; observed diving and surface heart rates at rest are roughly 8 bpm and 25 bpm, respectively. The total duration of a single heart beat is 1.8 s. See Goldbogen et al. (2019).
+- Dive response: submerged bradycardia and surface tachycardia 
+- Allometry predicts 15 bpm for blue whale
+- Observed ~8 bpm submerged bradycardia, ~25 bpm surface tachycardia
+- Duration of heart beat ~1.8 s
 
-Goldbogen, Jeremy A., D. E. Cade, J. Calambokidis, M. F. Czapanskiy, J. Fahlbusch, A. S. Friedlaender, W. T. Gough, et al. “Extreme Bradycardia and Tachycardia in the World’s Largest Animal.” *Proceedings of the National Academy of Sciences* 116, no. 50 (December 10, 2019): 25329–32. https://doi.org/10.1073/pnas.1914273116.
-
-<img src="goldbogen_et_al_2019_fig1e.png" width="450" />
-
-Figure 1e from Goldbogen et al. (2019)
+![(Goldbogen et al. 2019)](goldbogen_et_al_2019_fig1e.png){width=50%,height=50%}
 
 ## Ballistocardiogram
 
-There are multiple methods for detecting heart beats. Marine mammal cardiac function has been studied with electrocardiograms and phonocardiograms, which use electric potential and sound, respectively. A ballistocardiogram (BCG) detects the ballistic forces associated with the pulses of blood powered by heart beats. As the heart pumps blood into the aorta, the body mass recoils slightly towards the head. As an example, doctors use ballistograms collected by accelerometers installed in mattresses to detect heart beat abnormalities during sleep (Sadek, Biswas, and Abdulrazak 2019). We recently discovered that accelerometers in a tag can, under the right conditions, measure diving bradycardia.
+- Cardiovascular function via ballistic forces
+- As blood pumps into great vessels, body mass recoils
+- Greatest magnitude in longitudinal direction
 
-Sadek, Ibrahim, Jit Biswas, and Bessam Abdulrazak. “Ballistocardiogram Signal Processing: A Review.” *Health Information Science and Systems* 7, no. 1 (May 16, 2019): 10. https://doi.org/10.1007/s13755-019-0071-7.
+![(Giovangrandi et al. 2011)](giovangrandi_et_al_2011_fig2.jpg){width=75%,height=75%}
 
-Deployment bw180905-53 slipped behind the left pectoral flipper, where it stayed overnight. In this position, heart beats are visible in the jerk signal during rest dives.
+## bw180905-53
 
-<img src="_bw180905-53Quicklook.jpg" width="650" />
+- Slipped behind pectoral flipper
+- Overnight deployment
+
+![bw180905-53 Quicklook](_bw180905-53Quicklook.jpg){width=75%,height=75%}
+
+## bw180905-53 heart beats
+
+- Cadence (~6 bpm) and duration (~1.8 s) match ECG
+- Only detectable at night during rest dives
+- No surface tachycardia
 
 ```{r heartbeats}
 dive <- bw180905_53 %>% 
@@ -82,14 +95,20 @@ beats_p <- ggplot(zoom, aes(dt, jerk)) +
            x = beats$dt - 1.4, xend = beats$dt + 0.4, 
            y = 0.03, yend = 0.03) +
   annotate('text', 
-           x = beats$dt[1] - 1.6, y = 0.03, 
+           x = beats$dt[1] - 1.7, y = 0.03, 
            label = "1.8 s", hjust = 1) +
   scale_x_datetime(date_labels = "%H:%M:%S") +
   labs(y = "Jerk (m/s^3)")
 depth_p / jerk_p / beats_p
 ```
 
-Use the following interactive figure to investigate more!
+## Next steps
+
+- Other detection methods? Longitudinal acceleration, acoustics...
+- Other deployments? Overnight, behind flipper.
+- Just a note? Multi-species comparative study?
+
+## Interactive
 
 ```{r interactive}
 p_depth <- (ggplot(bw180905_53, aes(dt, p)) +
@@ -109,4 +128,3 @@ subplot(p_depth, p_jerk,
         titleX = FALSE,
         titleY = TRUE)
 ```
-
