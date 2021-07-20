@@ -32,9 +32,11 @@ Figure 1e from Goldbogen et al. (2019)
 
 ## Ballistocardiogram
 
-There are multiple methods for detecting heart beats. Marine mammal cardiac function has been studied with electrocardiograms and phonocardiograms, which use electric potential and sound, respectively. A ballistocardiogram (BCG) detects the ballistic forces associated with the pulses of blood powered by heart beats. As the heart pumps blood into the aorta, the body mass recoils slightly towards the head. Accelerometers installed in mattresses, for example, allow doctors to detect heart beat abnormalities during sleep (Sadek, Biswas, and Abdulrazak 2019). We recently discovered that accelerometers in a tag can, under the right conditions, measure diving bradycardia.
+There are multiple methods for detecting heart beats. Marine mammal cardiac function has been studied with electrocardiograms and phonocardiograms, which use electric potential and sound, respectively. A ballistocardiogram (BCG) detects the ballistic forces associated with the pulses of blood powered by heart beats. As the heart pumps blood into the aorta, the body mass recoils slightly towards the head. As an example, doctors use ballistograms collected by accelerometers installed in mattresses to detect heart beat abnormalities during sleep (Sadek, Biswas, and Abdulrazak 2019). We recently discovered that accelerometers in a tag can, under the right conditions, measure diving bradycardia.
 
-Deployment bw180905-53 slipped behind the left pectoral flipper, where it stayed overnight. In this position, heart beats are visible in the jerk signal.
+Sadek, Ibrahim, Jit Biswas, and Bessam Abdulrazak. “Ballistocardiogram Signal Processing: A Review.” *Health Information Science and Systems* 7, no. 1 (May 16, 2019): 10. https://doi.org/10.1007/s13755-019-0071-7.
+
+Deployment bw180905-53 slipped behind the left pectoral flipper, where it stayed overnight. In this position, heart beats are visible in the jerk signal during rest dives.
 
 <img src="_bw180905-53Quicklook.jpg" width="650" />
 
@@ -86,6 +88,8 @@ beats_p <- ggplot(zoom, aes(dt, jerk)) +
   labs(y = "Jerk (m/s^3)")
 depth_p / jerk_p / beats_p
 ```
+
+Use the following interactive figure to investigate more!
 
 ```{r interactive}
 p_depth <- (ggplot(bw180905_53, aes(dt, p)) +
