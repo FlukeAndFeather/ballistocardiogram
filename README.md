@@ -2,8 +2,8 @@
 
 Blue whale heart beats detected in accelerometry data
 
-## Interact
-See [ballistocardiogram.html](ballistocardiogram.html).
+## Presentation
+See [ballistocardiogram.html](https://flukeandfeather.github.io/ballistocardiogram/ballistocardiogram.html).
 
 ## Data
 bw180905-53_prh10_ballisto.nc is a subset of PRH variables from the bw180905-53 deployment cropped to nighttime. Run the following to generate it from the original NetCDF PRH file. You'll need to have the NCO command line tools installed.

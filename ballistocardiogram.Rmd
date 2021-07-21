@@ -128,3 +128,13 @@ subplot(p_depth, p_jerk,
         titleX = FALSE,
         titleY = TRUE)
 ```
+
+## Resources
+
+**Presentation:** https://flukeandfeather.github.io/ballistocardiogram/ballistocardiogram.html
+
+**Repository:** https://github.com/FlukeAndFeather/ballistocardiogram
+
+Giovangrandi, Laurent, Omer T Inan, Richard M Wiard, Mozziyar Etemadi, and Gregory TA Kovacs. “Ballistocardiography—a Method Worth Revisiting.” In *2011 Annual International Conference of the IEEE Engineering in Medicine and Biology Society*, 4279–82, 2011. https://dx.doi.org/10.1109%2FIEMBS.2011.6091062.
+
+Goldbogen, Jeremy A., D. E. Cade, J. Calambokidis, M. F. Czapanskiy, J. Fahlbusch, A. S. Friedlaender, W. T. Gough, et al. “Extreme Bradycardia and Tachycardia in the World’s Largest Animal.” *Proceedings of the National Academy of Sciences* 116, no. 50 (December 10, 2019): 25329–32. https://doi.org/10.1073/pnas.1914273116.
